@@ -16,9 +16,7 @@ Containerization:
  - Docker;
  
 ## 10,000 m View
-
-// TODO: Add the architecture image
+![10,000 m architecture view](./docs/images/project_isis_architecture_10000.png)
 
 ## 1,000 m View
-
 // TODO: Add others architecture images
