@@ -88,7 +88,12 @@ sub parse_json_file {
 sub save_current_test_result {
 	my ($result_data, $test_count) = @_;
 
-	my $json_tests = parse_json_file(RESULT_FILE);
+	# We do not have the file on the first run, so we use an empty hash
+	my $json_tests = {};
+	if (-f RESULT_FILE) {
+		$json_tests = parse_json_file(RESULT_FILE);
+	}
+
 	$json_tests->{$test_count} = $result_data;
 
 	my $json_result = encode_json($json_tests); # Create result json
