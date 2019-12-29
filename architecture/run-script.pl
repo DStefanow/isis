@@ -12,24 +12,7 @@ use constant INPUT_TESTS_FILE => 'input-tests.json';
 use constant TEST_FILE => 'runtest';
 use constant RESULT_FILE => 'result-data.json';
 
-# Read the whole json file
-my $json_file = do {
-	local $/= undef;
-	open my $FH, '<', JSON_FILE or do {
-		print "Unable to read test file: " . JSON_FILE . "\n";
-		exit 2;
-	};
-	<$FH>;
-};
-
-# Parse json file into hash
-my $json_tests = {};
-try {
-	$json_tests = decode_json($json_file);
-} catch {
-	print "Unable to parse " . JSON_FILE . "\n";
-	exit 3;
-};
+my $json_tests = parse_json_file(INPUT_TESTS_FILE);
 
 my ($pid, $chld_outline, $chld_proc, $chld_answer); # Used to pass and read the data from test file
 
@@ -76,12 +59,39 @@ foreach my $input_tests (@{$json_tests}) {
 	$counter++;
 }
 
+sub parse_json_file {
+	my $json_file = shift;
+
+	# Read the whole json file at once
+	my $json_data = do {
+		local $/= undef;
+		open my $FH, '<', $json_file or do {
+			print "Unable to read test file: " . $json_file . "\n";
+			exit 2;
+		};
+		<$FH>;
+	};
+
+	# Parse json file into hash
+	my $json_tests = {};
+	try {
+		$json_tests = decode_json($json_data);
+	} catch {
+		print "Unable to parse " . INPUT_TESTS_FILE . "\n";
+		exit 3;
+	};
+
+	return $json_tests;
+}
 
 # Save the data in result file
 sub save_current_test_result {
 	my ($result_data, $test_count) = @_;
 
-	my $json_result = encode_json({ $test_count => $result_data }); # Create result json
+	my $json_tests = parse_json_file(RESULT_FILE);
+	$json_tests->{$test_count} = $result_data;
+
+	my $json_result = encode_json($json_tests); # Create result json
 
 	open my $FH, '>', RESULT_FILE or do {
 		print "Unable to write to result file: " . RESULT_FILE . "\n";
