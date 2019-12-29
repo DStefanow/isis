@@ -6,9 +6,10 @@ use warnings;
 use JSON::XS qw(encode_json decode_json);
 use Try::Tiny;
 use IPC::Open3 qw(open3);
+use POSIX ":sys_wait_h";
 
 use constant JSON_FILE => 'input-tests.json';
-use constant TEST_FILE => 'test.pl';
+use constant TEST_FILE => 'runtest';
 use constant RESULT_FILE => 'result-data.json';
 
 # Read the whole json file
