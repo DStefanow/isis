@@ -103,6 +103,7 @@ sub save_current_test_result {
 		exit 6;
 	};
 
+	flock($FH, 2); # Lock the file for other process
 	print $FH $json_result;
 
 	close $FH;
