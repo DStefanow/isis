@@ -77,7 +77,7 @@ sub parse_json_file {
 	try {
 		$json_tests = decode_json($json_data);
 	} catch {
-		print "Unable to parse " . INPUT_TESTS_FILE . "\n";
+		print "Unable to parse " . $json_file . "\n";
 		exit 3;
 	};
 
