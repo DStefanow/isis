@@ -31,9 +31,11 @@ try {
 	exit 3;
 };
 
-my ($pid, $chld_answer); # Used to pass and read the data from test file
+my ($pid, $chld_outline, $chld_proc, $chld_answer); # Used to pass and read the data from test file
 
 my @result_data = (); # Save the result from test script
+
+my $counter = 1; # Counter for input tests
 
 foreach my $input_tests (@{$json_tests}) {
 	# Open file for input tests
@@ -49,20 +51,46 @@ foreach my $input_tests (@{$json_tests}) {
 		print CHLD_WRITE "$input_test\n";
 	}
 
+	$chld_answer = '';
 	# Read the output from the test script and add it to the array
-	chomp($chld_answer = <CHLD_READ>);
-	push @result_data, $chld_answer;
+	while (1) {
+		$chld_proc = waitpid($pid, WNOHANG);
+
+		if ($chld_proc == -1) { # Problem with child process
+			print "Child process error: " . ($? >> 8);
+			exit 5;
+		}
+
+		if ($chld_proc) { # Child process is ready
+			last;
+		}
+
+		$chld_outline = <CHLD_READ>; # Get output line from child process
+
+		if ($chld_outline) {
+			$chld_answer .= $chld_outline; # Append and construct the output
+		}
+	}
+
+	save_current_test_result($chld_answer, $counter);
+	$counter++;
 }
 
-my $json_result = encode_json(\@result_data); # Turn the result into json
 
 # Save the data in result file
-open my $FH, '>', RESULT_FILE or do {
-	print "Unable to write to result file: " . RESULT_FILE . "\n";
-	exit 5;
-};
+sub save_current_test_result {
+	my ($result_data, $test_count) = @_;
 
-print $FH $json_result;
-close $FH;
+	my $json_result = encode_json({ $test_count => $result_data }); # Create result json
+
+	open my $FH, '>', RESULT_FILE or do {
+		print "Unable to write to result file: " . RESULT_FILE . "\n";
+		exit 6;
+	};
+
+	print $FH $json_result;
+
+	close $FH;
+}
 
 exit 0;
