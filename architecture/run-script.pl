@@ -8,7 +8,7 @@ use Try::Tiny;
 use IPC::Open3 qw(open3);
 use POSIX ":sys_wait_h";
 
-use constant JSON_FILE => 'input-tests.json';
+use constant INPUT_TESTS_FILE => 'input-tests.json';
 use constant TEST_FILE => 'runtest';
 use constant RESULT_FILE => 'result-data.json';
 
