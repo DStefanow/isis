@@ -1,4 +1,5 @@
 #!/usr/bin/perl
+package TestUtils::Runner;
 use strict;
 use warnings;
 
@@ -112,6 +113,9 @@ sub __main() {
 	run_tests();
 }
 
-__main();
+# The following line make the file acts like script
+__PACKAGE__->__main() unless caller();
 
 exit 0;
+
+__END__
