@@ -1,0 +1,2 @@
+# Exclude generated html from prove tests
+tests/html/
