@@ -16,8 +16,7 @@ my $test_file = '';
 GetOptions("test-file|f=s" => \$test_file);
 
 if (!$test_file) {
-	print "Missing test file!\n";
-	exit 7;
+	log_error("Missing test file: $test_file!", 7);
 }
 
 sub run_tests {
@@ -32,8 +31,7 @@ sub run_tests {
 		try {
 			$pid = open3(\*CHLD_WRITE, \*CHLD_READ, 0, './' . $test_file);
 		} catch {
-			print "Unable to open " . $test_file . " for I/O operations\n";
-			exit 4;
+			log_error("Unable to open $test_file for I/O operations", 4);
 		};
 
 		# Send the input string to CHILD STDIN
@@ -47,8 +45,7 @@ sub run_tests {
 			$chld_proc = waitpid($pid, WNOHANG);
 
 			if ($chld_proc == -1) { # Problem with child process
-				print "Child process error: " . ($? >> 8);
-				exit 5;
+				log_error("Child process error: " . ($? >> 8), 5);
 			}
 
 			if ($chld_proc) { # Child process is ready
@@ -74,8 +71,7 @@ sub parse_json_file {
 	my $json_data = do {
 		local $/= undef;
 		open my $FH, '<', $json_file or do {
-			print "Unable to read test file: " . $json_file . "\n";
-			exit 2;
+			log_error("Unable to read test file: " . $json_file, 2);
 		};
 		<$FH>;
 	};
@@ -85,8 +81,7 @@ sub parse_json_file {
 	try {
 		$json_tests = decode_json($json_data);
 	} catch {
-		print "Unable to parse " . $json_file . "\n";
-		exit 3;
+		log_error("Unable to parse $json_file", 3);
 	};
 
 	return $json_tests;
@@ -97,24 +92,54 @@ sub save_current_test_result {
 	my ($result_data, $test_count) = @_;
 
 	# We do not have the file on the first run, so we use an empty hash
-	my $json_tests = {};
+	my $json_data = {};
 	if (-f RESULT_FILE) {
-		$json_tests = parse_json_file(RESULT_FILE);
+		$json_data = parse_json_file(RESULT_FILE);
 	}
 
-	$json_tests->{$test_count} = $result_data;
+	$json_data->{results}->{$test_count} = $result_data;
 
-	my $json_result = encode_json($json_tests); # Create result json
+	my $json_result = encode_json($json_data); # Create result json
 
-	open my $FH, '>', RESULT_FILE or do {
-		print "Unable to write to result file: " . RESULT_FILE . "\n";
-		exit 6;
+	save_json_in_file($json_data, RESULT_FILE);
+}
+
+sub log_error {
+	my $err_msg = shift;
+	my $err_code = shift;
+
+	# We do not have the file on the first run, so we use an empty hash
+	my $json_data = {};
+	if (-f RESULT_FILE) {
+		$json_data = parse_json_file(RESULT_FILE);
+	}
+
+	$json_data->{error} = {
+		'error_msg' => $err_msg,
+		'error_code' => $err_code
+	};
+
+	save_json_in_file($json_data, RESULT_FILE);
+
+	exit $err_code;
+}
+
+sub save_json_in_file {
+	my $json_data = shift;
+	my $json_file = shift;
+
+	my $json_result = encode_json($json_data); # Create result json
+
+	open my $FH, '>', $json_file or do {
+		log_error("Unable to write to result file: $json_file", 6);
 	};
 
 	flock($FH, 2); # Lock the file for other process
 	print $FH $json_result;
 
 	close $FH;
+
+	return 1;
 }
 
 sub __main() {
