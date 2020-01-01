@@ -16,7 +16,7 @@ my $test_file = '';
 GetOptions("test-file|f=s" => \$test_file);
 
 if (!$test_file) {
-	log_error("Missing test file: $test_file!", 7);
+	log_error("Missing test file!", 7);
 }
 
 sub run_tests {
@@ -143,6 +143,7 @@ sub save_json_in_file {
 }
 
 sub __main() {
+	unlink(RESULT_FILE); # Be sure that we do not have result file before tests
 	run_tests();
 }
 
