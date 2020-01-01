@@ -3,14 +3,22 @@ package TestUtils::Runner;
 use strict;
 use warnings;
 
+use Getopt::Long;
 use JSON::XS qw(encode_json decode_json);
 use Try::Tiny;
 use IPC::Open3 qw(open3);
 use POSIX ":sys_wait_h";
 
 use constant INPUT_TESTS_FILE => 'input-tests.json';
-use constant TEST_FILE => 'runtest';
 use constant RESULT_FILE => 'result-data.json';
+
+my $test_file = '';
+GetOptions("test-file|f=s" => \$test_file);
+
+if (!$test_file) {
+	print "Missing test file!\n";
+	exit 7;
+}
 
 sub run_tests {
 	my $json_tests = parse_json_file(INPUT_TESTS_FILE);
@@ -22,9 +30,9 @@ sub run_tests {
 	foreach my $input_tests (@{$json_tests}) {
 		# Open file for input tests
 		try {
-			$pid = open3(\*CHLD_WRITE, \*CHLD_READ, 0, './' . TEST_FILE);
+			$pid = open3(\*CHLD_WRITE, \*CHLD_READ, 0, './' . $test_file);
 		} catch {
-			print "Unable to open " . TEST_FILE . " for I/O operations\n";
+			print "Unable to open " . $test_file . " for I/O operations\n";
 			exit 4;
 		};
 
