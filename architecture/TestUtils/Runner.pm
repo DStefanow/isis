@@ -3,6 +3,7 @@ package TestUtils::Runner;
 use strict;
 use warnings;
 
+use Pod::Usage;
 use Getopt::Long;
 use JSON::XS qw(encode_json decode_json);
 use Try::Tiny;
@@ -12,10 +13,15 @@ use POSIX ":sys_wait_h";
 use constant INPUT_TESTS_FILE => 'input-tests.json';
 use constant RESULT_FILE => 'result-data.json';
 
+my $verbose;
 my $test_file = '';
-GetOptions("test-file|f=s" => \$test_file);
+GetOptions(
+	"verbose|v" => \$verbose,
+	"test-file|f=s" => \$test_file
+);
 
-if (!$test_file) {
+if (!$test_file || $verbose) {
+	pod2usage("Usage $0 --test-file=<test file>");
 	log_error("Missing test file!", 7);
 }
 
