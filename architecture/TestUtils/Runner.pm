@@ -162,6 +162,6 @@ sub __main() {
 	run_tests($test_file);
 }
 
-exit 0;
+1;
 
 __END__
