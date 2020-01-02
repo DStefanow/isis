@@ -13,23 +13,28 @@ use POSIX ":sys_wait_h";
 use constant INPUT_TESTS_FILE => 'input-tests.json';
 use constant RESULT_FILE => 'result-data.json';
 
-my $verbose;
 my $test_file = '';
-GetOptions(
-	"verbose|v" => \$verbose,
-	"test-file|f=s" => \$test_file
-);
 
-if (!$test_file || $verbose) {
-	pod2usage("Usage $0 --test-file=<test file>");
-	log_error("Missing test file!", 7);
+# The following statement make the file acts like script
+if(!caller()) {
+	GetOptions(
+		"test-file|f=s" => \$test_file
+	);
+
+	if (!$test_file) {
+		pod2usage("Usage $0 --test-file=<test file>");
+		log_error("Missing test file!", 7);
+	}
+
+	__PACKAGE__->__main($test_file); # Call main function
 }
 
 sub run_tests {
+	my $test_file = shift;
+
 	my $json_tests = parse_json_file(INPUT_TESTS_FILE);
 
 	my ($pid, $chld_outline, $chld_proc, $chld_answer); # Used to pass and read the data from test file
-
 	my $counter = 1; # Counter for input tests
 
 	foreach my $input_tests (@{$json_tests}) {
@@ -150,11 +155,8 @@ sub save_json_in_file {
 
 sub __main() {
 	unlink(RESULT_FILE); # Be sure that we do not have result file before tests
-	run_tests();
+	run_tests($test_file);
 }
-
-# The following line make the file acts like script
-__PACKAGE__->__main() unless caller();
 
 exit 0;
 
