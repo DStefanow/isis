@@ -13,6 +13,10 @@ use POSIX ":sys_wait_h";
 use constant INPUT_TESTS_FILE => 'input-tests.json';
 use constant RESULT_FILE => 'result-data.json';
 
+require Exporter;
+our @ISA = qw(Exporter);
+our @EXPORT_OK = qw(run_tests parse_json_file save_current_test_result log_error save_json_in_file);
+
 my $test_file = '';
 
 # The following statement make the file acts like script
