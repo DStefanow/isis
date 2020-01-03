@@ -18,5 +18,8 @@ Containerization:
 ## 10,000 m View
 ![10,000 m architecture view](./docs/images/project_isis_architecture_10000.png)
 
+## Database structure
+![database structure](./docs/images/project_isis_database_arch_1000.png)
+
 ## 1,000 m View
 // TODO: Add others architecture images
