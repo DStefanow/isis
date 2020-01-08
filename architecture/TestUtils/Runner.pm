@@ -114,8 +114,6 @@ sub save_current_test_result {
 
 	$json_data->{results}->{$test_count} = $result_data;
 
-	my $json_result = encode_json($json_data); # Create result json
-
 	save_json_in_file($json_data, RESULT_FILE);
 }
 
