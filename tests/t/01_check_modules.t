@@ -16,7 +16,7 @@ has it.
 =cut
 
 # All modules, add a new module here
-my @modules = ('JSON::XS', 'Try::Tiny', 'IPC::Open3', 'POSIX', 'Getopt::Long', 'Pod::Usage');
+my @modules = ('Test::More', 'Test::Most', 'JSON::XS', 'Try::Tiny', 'IPC::Open3', 'POSIX', 'Getopt::Long', 'Pod::Usage');
 my $modules_count = @modules;
 
 diag("Going to check for $modules_count installed modules!\n");

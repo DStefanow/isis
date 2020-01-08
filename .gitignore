@@ -1,3 +1,4 @@
 # Exclude generated html from prove tests
 tests/html/
 cover_db/
+tests/t/data/tmp/
