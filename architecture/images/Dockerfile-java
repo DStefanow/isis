@@ -1,0 +1,10 @@
+# Use base image
+FROM isis/core:1.0
+
+# Install jre and jdk
+RUN apt-get install default-jre -y
+RUN apt-get install default-jdk -y
+
+# Change running user and home dir
+USER isisuser
+WORKDIR /home/isisuser
