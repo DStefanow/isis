@@ -1,0 +1,19 @@
+# Define the base image
+FROM ubuntu:14.04
+
+# Basic setup
+RUN apt-get update
+RUN apt-get install perl
+
+# Create test user
+RUN useradd -ms /bin/bash isisuser
+
+# Copy limits.conf
+COPY ulimits/limits.conf /etc/security/limits.conf
+
+# Copy apparmor configuration
+COPY apparmor/sbin.isisuser /etc/apparmor.d/sbin.isisuser
+
+# Change running user and home dir
+USER isisuser
+WORKDIR /home/isisuser
