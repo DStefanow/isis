@@ -1,0 +1,6 @@
+# Use the core image
+FROM isis/core:1.0
+
+# Change running user and home dir
+USER isisuser
+WORKDIR /home/isisuser

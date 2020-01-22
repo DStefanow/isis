@@ -1,0 +1,9 @@
+# Use base image
+FROM isis/core:1.0
+
+# Install gcc and g++
+RUN apt-get install build-essential -y
+
+# Change running user and home dir
+USER isisuser
+WORKDIR /home/isisuser
