@@ -3,7 +3,7 @@ FROM ubuntu:14.04
 
 # Basic setup
 RUN apt-get update
-RUN apt-get install perl
+RUN apt-get install perl -y
 
 # Create test user
 RUN useradd -ms /bin/bash isisuser
