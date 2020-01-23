@@ -12,4 +12,8 @@ RUN useradd -ms /bin/bash isisuser
 COPY ulimits/limits.conf /etc/security/limits.conf
 
 # Copy apparmor configuration
-COPY apparmor/sbin.isisuser /etc/apparmor.d/sbin.isisuser
+COPY apparmor/home.isisuser.testsource /etc/apparmor.d/
+
+# Copy Runner script and change the owner
+COPY TestUtils/Runner.pm /home/isisuser/
+RUN chown isisuser: /home/isisuser/Runner.pm
