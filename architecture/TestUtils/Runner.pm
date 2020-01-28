@@ -48,7 +48,7 @@ sub run_tests {
 	foreach my $input_tests (@{$json_tests}) {
 		# Open file for input tests
 		try {
-			$pid = open3(\*CHLD_WRITE, \*CHLD_READ, 0, './' . $test_file);
+			$pid = open3(\*CHLD_WRITE, \*CHLD_READ, 0, "su - isisuser -c \"/usr/bin/perl $test_file\"");
 		} catch {
 			log_error("Unable to open $test_file for I/O operations", 4);
 		};
