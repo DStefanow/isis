@@ -2,18 +2,28 @@
 FROM ubuntu:14.04
 
 # Basic setup
+# Update current system
+# Install build functions, perl and curl library
 RUN apt-get update
+RUN apt-get install build-essential -y
 RUN apt-get install perl -y
+RUN apt-get install curl libcurl3 libcurl3-dev -y
 
-# Create test user
-RUN useradd -ms /bin/bash isisuser
+# Install cpanm for easy perl modules setup
+RUN curl -L https://cpanmin.us | perl - --sudo App::cpanminus
 
-# Copy limits.conf
-COPY ulimits/limits.conf /etc/security/limits.conf
-
-# Copy apparmor configuration
-COPY apparmor/home.isisuser.testsource /etc/apparmor.d/
+# Install required perl modules
+RUN cpanm -f JSON::XS Try::Tiny
 
 # Copy Runner script and change the owner
-COPY TestUtils/Runner.pm /home/isisuser/
-RUN chown isisuser: /home/isisuser/Runner.pm
+RUN mkdir -p /usr/local/TestUtils/
+COPY TestUtils/Runner.pm /usr/local/TestUtils/
+
+# Create test user
+#RUN useradd -ms /bin/bash isisuser
+
+# Copy limits.conf
+#COPY ulimits/limits.conf /etc/security/limits.conf
+
+# Copy apparmor configuration
+#COPY apparmor/home.isisuser.testsource /etc/apparmor.d/
