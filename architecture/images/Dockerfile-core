@@ -9,7 +9,7 @@ RUN apt-get install build-essential -y
 RUN apt-get install perl -y
 RUN apt-get install curl libcurl3 libcurl3-dev -y
 
-# Install cpanm for easy perl modules setup
+# Install cpanm for easy setup on perl modules
 RUN curl -L https://cpanmin.us | perl - --sudo App::cpanminus
 
 # Install required perl modules
@@ -20,10 +20,10 @@ RUN mkdir -p /usr/local/TestUtils/
 COPY TestUtils/Runner.pm /usr/local/TestUtils/
 
 # Create test user
-#RUN useradd -ms /bin/bash isisuser
+RUN useradd -m isisuser
 
 # Copy limits.conf
-#COPY ulimits/limits.conf /etc/security/limits.conf
+COPY ulimits/limits.conf /etc/security/limits.conf
 
 # Copy apparmor configuration
-#COPY apparmor/home.isisuser.testsource /etc/apparmor.d/
+COPY apparmor/home.isisuser.testsource /etc/apparmor.d/
